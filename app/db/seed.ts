@@ -2,7 +2,7 @@ import { db } from "./index";
 import { friends, picks } from "./schema";
 
 // Edit this with your own group's friends and their 5 team picks.
-// Team names must match football-data.org names (e.g. "Korea Republic" not "South Korea").
+// Team names must match football-data.org names (e.g. "South Korea" not "Korea Republic").
 const GROUPS: Record<string, string[]> = {
   Stew: ["England", "Switzerland", "Colombia", "Turkey", "Canada"],
   Alex: ["France", "Belgium", "Mexico", "Norway", "Uruguay"],
@@ -25,4 +25,5 @@ async function seed() {
   console.log("Seeded", Object.keys(GROUPS).length, "friends");
 }
 
-seed();
+await seed();
+process.exit(0);

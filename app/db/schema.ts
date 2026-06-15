@@ -1,13 +1,13 @@
 import { relations } from "drizzle-orm";
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { pgTable, text, integer, serial } from "drizzle-orm/pg-core";
 
-export const friends = sqliteTable("friends", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const friends = pgTable("friends", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
 });
 
-export const picks = sqliteTable("picks", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const picks = pgTable("picks", {
+  id: serial("id").primaryKey(),
   friendId: integer("friend_id")
     .notNull()
     .references(() => friends.id, { onDelete: "cascade" }),

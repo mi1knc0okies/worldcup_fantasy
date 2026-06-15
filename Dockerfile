@@ -1,22 +1,24 @@
-FROM node:20-alpine AS development-dependencies-env
-COPY . /app
+FROM oven/bun:1 AS dependencies-env
+COPY package.json bun.lock /app/
 WORKDIR /app
-RUN npm ci
+RUN bun install --frozen-lockfile
 
-FROM node:20-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
-WORKDIR /app
-RUN npm ci --omit=dev
-
-FROM node:20-alpine AS build-env
+FROM oven/bun:1 AS build-env
 COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
+COPY --from=dependencies-env /app/node_modules /app/node_modules
 WORKDIR /app
-RUN npm run build
+RUN bun run build
 
-FROM node:20-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
+FROM oven/bun:1
+COPY package.json bun.lock /app/
+COPY --from=dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build
+COPY --from=build-env /app/drizzle /app/drizzle
+COPY --from=build-env /app/drizzle.config.ts /app/drizzle.config.ts
+COPY --from=build-env /app/app/db /app/app/db
 WORKDIR /app
-CMD ["npm", "run", "start"]
+
+# DATABASE_URL must point at a Postgres instance, e.g.
+# postgres://user:pass@host:5432/dbname
+EXPOSE 3000
+CMD ["sh", "-c", "bun run db:migrate && bun run start"]

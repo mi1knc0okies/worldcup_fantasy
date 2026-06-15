@@ -1,87 +1,69 @@
-# Welcome to React Router!
+# World Cup Fantasy Scoreboard
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Track a group of friends' picks (5 teams each) through the FIFA World Cup group stage.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+**Scoring**
 
-## Features
+- Win = 3 pts, draw or shootout loss = 1 pt, regular loss = 0 pts (group-stage matches only)
+- Group placement bonus once a group finishes: 1st = 3 pts, 2nd = 2 pts, 3rd place that advances (one of the 8 best 3rd-place teams) = 1 pt
+- A "live now" ticker shows in-play matches and provisionally reflects their points until the match is `FINISHED`
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+## Setup
 
-## Getting Started
+1. Install dependencies:
 
-### Installation
+   ```bash
+   bun install
+   ```
 
-Install the dependencies:
+2. Copy `.env.example` to `.env`, set `FOOTBALL_DATA_API_KEY` (free key at [football-data.org](https://www.football-data.org/client/register)) and `DATABASE_URL` to a Postgres connection string. For local development, `docker compose up db -d` starts a local Postgres matching the `docker-compose.yml` defaults (`postgres://postgres:postgres@localhost:5432/worldcup_fantasy`).
 
-```bash
-npm install
-```
+3. Edit `app/db/seed.ts` with your group's friends and their 5 team picks. Team names must match football-data.org's names (e.g. "South Korea" not "Korea Republic", "United States" not "USA").
 
-### Development
+4. Create the database tables and seed them:
 
-Start the development server with HMR:
+   ```bash
+   bun run db:migrate
+   bun run db:seed
+   ```
 
-```bash
-npm run dev
-```
+   Run `bun run db:studio` for a GUI to inspect/edit picks instead.
 
-Your application will be available at `http://localhost:5173`.
+5. Start the dev server:
 
-## Building for Production
+   ```bash
+   bun run dev
+   ```
 
-Create a production build:
+   Visit `http://localhost:5173`.
 
-```bash
-npm run build
-```
+## Database
+
+Uses Postgres via Drizzle (`drizzle-orm/node-postgres`). `DATABASE_URL` works with any Postgres provider — Railway, Neon, Supabase, a self-hosted container, etc.
 
 ## Deployment
 
-### Docker Deployment
-
-To build and run using Docker:
+### Docker Compose (self-hosting with a bundled Postgres)
 
 ```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
+docker compose up
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
+This starts the app and a Postgres database together. On first run, apply migrations and seed:
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+```bash
+docker compose exec app bun run db:migrate
+docker compose exec app bun run db:seed
 ```
 
-## Styling
+### Docker (bring your own Postgres)
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+```bash
+docker build -t worldcup-fantasy .
+docker run -p 3000:3000 \
+  -e FOOTBALL_DATA_API_KEY=your_key \
+  -e DATABASE_URL=postgres://user:pass@host:5432/dbname \
+  worldcup-fantasy
+```
 
----
-
-Built with ❤️ using React Router.
+Works on any host that can reach your Postgres instance: Railway, Fly.io, Render, Vercel, a VPS, etc. Run `bun run db:migrate` and `bun run db:seed` against the same `DATABASE_URL` before first use.
