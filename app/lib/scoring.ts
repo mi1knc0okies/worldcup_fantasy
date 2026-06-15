@@ -97,12 +97,18 @@ export interface TeamScore {
   livePoints: number;
   placementBonus: number;
   total: number;
+  results: MatchResult[];
+  liveResults: MatchResult[];
 }
 
-function sumMatchPoints(matches: Match[], teamName: string): number {
+function getTeamMatchResults(matches: Match[], teamName: string): MatchResult[] {
   return matches
     .filter((m) => m.homeTeam.name === teamName || m.awayTeam.name === teamName)
-    .reduce((sum, m) => sum + MATCH_POINTS[classifyMatchResult(m, teamName)], 0);
+    .map((m) => classifyMatchResult(m, teamName));
+}
+
+function sumPoints(results: MatchResult[]): number {
+  return results.reduce((sum, r) => sum + MATCH_POINTS[r], 0);
 }
 
 export function computeTeamScore(
@@ -112,8 +118,10 @@ export function computeTeamScore(
   liveMatches: Match[],
   advancingThirdPlace: Set<string>
 ): TeamScore {
-  const matchPoints = sumMatchPoints(matches, teamName);
-  const livePoints = sumMatchPoints(liveMatches, teamName);
+  const results = getTeamMatchResults(matches, teamName);
+  const liveResults = getTeamMatchResults(liveMatches, teamName);
+  const matchPoints = sumPoints(results);
+  const livePoints = sumPoints(liveResults);
 
   const standing = standings.find((s) => s.team.name === teamName);
   const bonus = placementBonus(standing, standings, advancingThirdPlace);
@@ -124,6 +132,8 @@ export function computeTeamScore(
     livePoints,
     placementBonus: bonus,
     total: matchPoints + livePoints + bonus,
+    results,
+    liveResults,
   };
 }
 

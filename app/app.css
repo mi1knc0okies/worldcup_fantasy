@@ -113,8 +113,8 @@ body {
   vertical-align: middle;
 }
 
-.team-row__matchpts.is-live {
-  color: var(--color-cream);
+.team-row__total.is-live {
+  color: var(--color-gold);
 }
 
 .live-ticker__list {
@@ -281,9 +281,27 @@ body {
   gap: 0.15rem;
 }
 
+.team-list-header {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr 1.6rem 1.6rem 1.6rem 2.2rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.25rem 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-cream-dim);
+  text-align: center;
+}
+
+.team-list-header span:last-child {
+  text-align: right;
+}
+
 .team-row {
   display: grid;
-  grid-template-columns: 1.5rem 1fr auto auto;
+  grid-template-columns: 1.5rem 1fr 1.6rem 1.6rem 1.6rem 2.2rem;
   align-items: center;
   gap: 0.6rem;
   padding: 0.4rem 0.25rem;
@@ -293,6 +311,14 @@ body {
 
 .team-row:hover {
   background: rgba(255, 255, 255, 0.04);
+}
+
+.team-row__record {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--color-cream-dim);
 }
 
 .team-row__rank {
@@ -309,57 +335,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.team-row__breakdown {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--color-cream-dim);
-}
-
-.team-row__matchpts {
-  font-variant-numeric: tabular-nums;
-}
-
-.medal {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.4rem;
-  height: 1.4rem;
-  padding: 0 0.35rem;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  border: 1px solid transparent;
-}
-
-.medal--gold {
-  color: var(--color-gold);
-  border-color: rgba(255, 207, 63, 0.4);
-  background: rgba(255, 207, 63, 0.12);
-}
-
-.medal--silver {
-  color: var(--color-silver);
-  border-color: rgba(207, 216, 220, 0.35);
-  background: rgba(207, 216, 220, 0.1);
-}
-
-.medal--bronze {
-  color: var(--color-bronze);
-  border-color: rgba(224, 142, 69, 0.4);
-  background: rgba(224, 142, 69, 0.12);
-}
-
-.medal--none {
-  color: var(--color-cream-dim);
-  border-color: var(--color-line);
-  background: transparent;
 }
 
 .team-row__total {

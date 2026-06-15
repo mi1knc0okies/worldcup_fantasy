@@ -53,13 +53,6 @@ export async function loader() {
   };
 }
 
-const MEDAL_TIER: Record<number, "gold" | "silver" | "bronze" | "none"> = {
-  3: "gold",
-  2: "silver",
-  1: "bronze",
-  0: "none",
-};
-
 export default function Home({ loaderData }: Route.ComponentProps) {
   const { leaderboard, liveMatches } = loaderData;
   const revalidator = useRevalidator();
@@ -127,35 +120,51 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 </span>
               </div>
               <div className="ticket__divider" />
+              <div className="team-list-header">
+                <span />
+                <span />
+                <span title="Wins">W</span>
+                <span title="Draws">D</span>
+                <span title="Losses">L</span>
+                <span title="Total points">Pts</span>
+              </div>
               <ul className="team-list">
-                {sortedPicks.map((p, idx) => (
-                  <li key={p.team} className="team-row">
-                    <span className="team-row__rank">{idx + 1}</span>
-                    <span className="team-row__name">{p.team}</span>
-                    <span className="team-row__breakdown">
+                {sortedPicks.map((p, idx) => {
+                  const allResults = [...p.results, ...p.liveResults];
+                  const wins = allResults.filter((r) => r === "win").length;
+                  const draws = allResults.filter((r) => r === "draw").length;
+                  const losses = allResults.filter(
+                    (r) => r === "loss" || r === "shootoutLoss"
+                  ).length;
+                  return (
+                    <li key={p.team} className="team-row">
+                      <span className="team-row__rank">{idx + 1}</span>
+                      <span className="team-row__name">{p.team}</span>
+                      <span className="team-row__record" title="Wins">
+                        {wins}
+                      </span>
+                      <span className="team-row__record" title="Draws">
+                        {draws}
+                      </span>
+                      <span className="team-row__record" title="Losses">
+                        {losses}
+                      </span>
                       <span
-                        className={`team-row__matchpts${p.livePoints !== 0 ? " is-live" : ""}`}
+                        className={`team-row__total${p.livePoints !== 0 ? " is-live" : ""}`}
                         title={
                           p.livePoints !== 0
-                            ? "Match points (incl. live, provisional)"
-                            : "Match points"
+                            ? "Total points (incl. live, provisional)"
+                            : "Total points"
                         }
                       >
-                        {p.matchPoints + p.livePoints}
+                        {p.total}
                         {p.livePoints !== 0 && (
                           <span className="live-dot live-dot--inline" />
                         )}
                       </span>
-                      <span
-                        className={`medal medal--${MEDAL_TIER[p.placementBonus] ?? "none"}`}
-                        title="Group placement bonus"
-                      >
-                        {p.placementBonus}
-                      </span>
-                    </span>
-                    <span className="team-row__total">{p.total}</span>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             </article>
           );
