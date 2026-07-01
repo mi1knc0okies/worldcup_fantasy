@@ -1,0 +1,27 @@
+ALTER TABLE "picks" ADD COLUMN "draft_order" integer NOT NULL DEFAULT 0;
+--> statement-breakpoint
+UPDATE "picks" SET "draft_order" = 1  WHERE "team_name" = 'England';
+UPDATE "picks" SET "draft_order" = 10 WHERE "team_name" = 'Switzerland';
+UPDATE "picks" SET "draft_order" = 11 WHERE "team_name" = 'Colombia';
+UPDATE "picks" SET "draft_order" = 20 WHERE "team_name" = 'Turkey';
+UPDATE "picks" SET "draft_order" = 21 WHERE "team_name" = 'Canada';
+UPDATE "picks" SET "draft_order" = 2  WHERE "team_name" = 'France';
+UPDATE "picks" SET "draft_order" = 9  WHERE "team_name" = 'Belgium';
+UPDATE "picks" SET "draft_order" = 12 WHERE "team_name" = 'Mexico';
+UPDATE "picks" SET "draft_order" = 19 WHERE "team_name" = 'Norway';
+UPDATE "picks" SET "draft_order" = 22 WHERE "team_name" = 'Uruguay';
+UPDATE "picks" SET "draft_order" = 3  WHERE "team_name" = 'Spain';
+UPDATE "picks" SET "draft_order" = 8  WHERE "team_name" = 'Netherlands';
+UPDATE "picks" SET "draft_order" = 13 WHERE "team_name" = 'United States';
+UPDATE "picks" SET "draft_order" = 18 WHERE "team_name" = 'Senegal';
+UPDATE "picks" SET "draft_order" = 23 WHERE "team_name" = 'Ivory Coast';
+UPDATE "picks" SET "draft_order" = 4  WHERE "team_name" = 'Brazil';
+UPDATE "picks" SET "draft_order" = 7  WHERE "team_name" = 'Argentina';
+UPDATE "picks" SET "draft_order" = 14 WHERE "team_name" = 'Croatia';
+UPDATE "picks" SET "draft_order" = 17 WHERE "team_name" = 'South Korea';
+UPDATE "picks" SET "draft_order" = 24 WHERE "team_name" = 'Egypt';
+UPDATE "picks" SET "draft_order" = 5  WHERE "team_name" = 'Portugal';
+UPDATE "picks" SET "draft_order" = 6  WHERE "team_name" = 'Germany';
+UPDATE "picks" SET "draft_order" = 15 WHERE "team_name" = 'Morocco';
+UPDATE "picks" SET "draft_order" = 16 WHERE "team_name" = 'Japan';
+UPDATE "picks" SET "draft_order" = 25 WHERE "team_name" = 'Sweden';

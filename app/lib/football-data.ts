@@ -78,7 +78,7 @@ export const getGroupStandings = withCache(async (): Promise<
 
 export const getGroupMatches = withCache(async (): Promise<Match[]> => {
   const data = await fetchFromApi<{ matches: Match[] }>(
-    `/competitions/${COMPETITION}/matches?stage=GROUP_STAGE`
+    `/competitions/${COMPETITION}/matches`
   );
 
   return data.matches.filter((m) => m.status === "FINISHED");
@@ -88,7 +88,7 @@ const LIVE_CACHE_TTL_MS = 15_000;
 
 export const getLiveMatches = withCache(async (): Promise<Match[]> => {
   const data = await fetchFromApi<{ matches: Match[] }>(
-    `/competitions/${COMPETITION}/matches?stage=GROUP_STAGE`
+    `/competitions/${COMPETITION}/matches`
   );
 
   return data.matches.filter(

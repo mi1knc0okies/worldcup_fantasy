@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRevalidator } from "react-router";
-import { db } from "../db";
+import { db } from "../.server/db";
 import {
   getGroupMatches,
   getGroupStandings,
@@ -19,15 +19,20 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader() {
-  const allFriends = await db.query.friends.findMany({
-    with: { picks: true },
-  });
-
-  const [standings, matches, liveMatches] = await Promise.all([
-    getGroupStandings(),
-    getGroupMatches(),
-    getLiveMatches(),
+  const [allFriendsOrError, [standings, matches, liveMatches]] = await Promise.all([
+    db.query.friends.findMany({ with: { picks: true } }).catch((e) => { console.error("[DB]", e); return null; }),
+    Promise.all([getGroupStandings(), getGroupMatches(), getLiveMatches()]),
   ]);
+  const allFriends = allFriendsOrError ?? [];
+  console.log("[loader] friends:", allFriends.length, "standings:", standings.length, "matches:", matches.length);
+
+  type TeamMeta = { pick: string; eliminated: boolean };
+  const teamMeta: Record<string, TeamMeta> = {};
+  for (const f of allFriends) {
+    for (const p of f.picks) {
+      teamMeta[p.teamName] = { pick: p.draftOrder ?? "", eliminated: p.eliminated ?? false };
+    }
+  }
 
   const leaderboard = computeLeaderboard(
     allFriends.map((f) => ({
@@ -41,6 +46,7 @@ export async function loader() {
 
   return {
     leaderboard,
+    teamMeta,
     liveMatches: liveMatches.map((m) => ({
       id: m.id,
       group: m.group,
@@ -54,7 +60,7 @@ export async function loader() {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { leaderboard, liveMatches } = loaderData;
+  const { leaderboard, liveMatches, teamMeta } = loaderData;
   const revalidator = useRevalidator();
 
   useEffect(() => {
@@ -137,9 +143,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                     (r) => r === "loss" || r === "shootoutLoss"
                   ).length;
                   return (
-                    <li key={p.team} className="team-row">
+                    <li key={p.team} className={`team-row${teamMeta[p.team]?.eliminated ? " team-row--eliminated" : ""}`}>
                       <span className="team-row__rank">{idx + 1}</span>
-                      <span className="team-row__name">{p.team}</span>
+                      <span className="team-row__name">
+                        {p.team}{teamMeta[p.team]?.pick ? ` – ${teamMeta[p.team].pick}` : ""}
+                      </span>
                       <span className="team-row__record" title="Wins">
                         {wins}
                       </span>

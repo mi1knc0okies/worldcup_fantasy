@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, integer, serial } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, serial, boolean } from "drizzle-orm/pg-core";
 
 export const friends = pgTable("friends", {
   id: serial("id").primaryKey(),
@@ -13,6 +13,8 @@ export const picks = pgTable("picks", {
     .references(() => friends.id, { onDelete: "cascade" }),
   // football-data.org team name, e.g. "Argentina"
   teamName: text("team_name").notNull(),
+  draftOrder: text("draft_order").default("0"),
+  eliminated: boolean("eliminated").notNull().default(false),
 });
 
 export const friendsRelations = relations(friends, ({ many }) => ({
